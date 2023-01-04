@@ -1,0 +1,44 @@
+ const connectMetamask = async () => {
+    if (typeof window.ethereum !== "undefined") {
+      let provider = window.ethereum;
+      try {
+        if (window.ethereum.providers?.length) {
+          window.ethereum.providers.forEach(async (p) => {
+            if (p.isMetaMask) provider = p;
+          });
+        }
+        await provider.request({ method: "eth_requestAccounts" });
+        const web3Provider = new ethers.providers.Web3Provider(provider);
+        const signer = web3Provider.getSigner();
+        const connectedWallet = await signer.getAddress();
+         console.log(connectedWallet);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      alert("Please install Metamask first");
+    }
+  };
+
+  const connectCoinbaseWallet = async () => {
+    if (typeof window.ethereum !== "undefined") {
+      let provider = window.ethereum;
+      try {
+        if (window.ethereum.providers?.length) {
+          window.ethereum.providers.forEach(async (p) => {
+            if (p.isCoinbaseWallet) provider = p;
+          });
+        }
+        await provider.request({ method: "eth_requestAccounts" });
+        const web3Provider = new ethers.providers.Web3Provider(provider);
+        const signer = web3Provider.getSigner();
+        const connectedWallet = await signer.getAddress();
+
+        console.log(connectedWallet);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      alert("Please install Coinbase first");
+    }
+  };
