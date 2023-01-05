@@ -1,0 +1,56 @@
+// This should be done in back-end. Not in client side.
+
+import axios from "axios";
+
+//file-uploader
+
+let PINATA_JWT = process.env.PINATA_JWT;
+
+const FileUploader = async (File, name, descripton, externalLink) => {
+  var data = new FormData();
+  data.append("file", File);
+
+  var config = {
+    method: "post",
+    url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+    headers: {
+      Authorization: `Bearer ${PINATA_JWT}`,
+    },
+    data: data,
+  };
+
+  const res = await axios(config);
+  // console.log("UploadFile", res);
+  const imageData = await JsonUploader(
+    res.data.IpfsHash,
+    name,
+    descripton,
+    externalLink
+  );
+  // return imageData;
+};
+
+const JsonUploader = async (cid, name, descripton, externalLink) => {
+  var data = JSON.stringify({
+    image: `ipfs://${cid}`,
+    gateway: `https://gateway.pinata.cloud/ipfs/${cid}`,
+    name: `${name}`,
+    description: `${descripton}`,
+    externalLink: `${externalLink}`,
+  });
+  var config = {
+    method: "post",
+    url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${PINATA_JWT}`,
+    },
+    data: data,
+  };
+
+  const res = await axios(config);
+  // console.log("UploadJson", res);
+  return res.data.IpfsHash;
+};
+
+export default FileUploader;
